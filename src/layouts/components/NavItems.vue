@@ -266,6 +266,8 @@ const navigationLinks: NavigationItem[] = [
       { title: 'File Type', link: '/setup/filetype' },
       { title: 'File Status', link: '/setup/filestatus' },
       { title: 'Year', link: '/setup/year' },
+      { title: 'Gender', link: '/setup/gender' },
+      { title: 'Martial Status', link: '/setup/marital_status' },
       // { title: 'Expense Line', link: '/setup/expense-line' },
       // { title: 'Item category', link: '/setup/item-category' },
       // { title: 'Item type', link: '/setup/item-type' },

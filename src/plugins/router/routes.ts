@@ -210,7 +210,9 @@ const router = createRouter({
             // Question Routes
             { path: 'tax', component: GenericSetUpComponent, props: { api_route: 'taxes', item_name: 'tax' }, name: 'tax' },
 
-            // ... other children for the 'setup' route (if any)
+            { path: 'gender', component: GenericSetUpComponent, props: { api_route: 'genders', item_name: 'gender' }, name: 'gender' },
+
+            { path: 'arital Status', component: GenericSetUpComponent, props: { api_route: 'marital_status', item_name: 'marital_status' }, name: 'Marital Status' },
           ],
         },
 
