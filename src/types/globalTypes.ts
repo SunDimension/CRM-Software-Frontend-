@@ -132,12 +132,9 @@ export interface User {
   email?: string
   password?: string
 
-  roles?: number[] // Changed to an array to allow multiple roles
-  branch_id?: number
-  branch_name: string; 
-  warehouse_id?: number
-  store_id: number
-  status_id?: number
+  roles?: number
+ 
+ 
   created_at?: string
 }
 

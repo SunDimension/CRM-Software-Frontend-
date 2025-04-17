@@ -6,6 +6,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/', redirect: 'dashboard' },
+   
     {
       path: '/',
       component: () => import('@/layouts/default.vue'),
@@ -13,6 +14,10 @@ const router = createRouter({
         {
           path: 'dashboard',
           component: () => import('@/pages/dashboard.vue'),
+        },
+        {
+          path: 'student-dashboard',
+          component: () => import('@/pages/student-dashboard.vue'),
         },
         {
           path: 'account-settings',
@@ -738,17 +743,32 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   useAuthStore().checkLocalStorage() // rehydrate from localStorage
 
-  const isLoggedIn = useAuthStore().status.loggedIn
+  const authStore = useAuthStore()
+  const isLoggedIn = authStore.status.loggedIn
   const publicPages = ['/login', '/register'] // Allow access to login/register
-  // console.log(isLoggedIn);
-
-  if (!isLoggedIn && !publicPages.includes(to.path))
+  
+  // Check if the user is logged in
+  if (!isLoggedIn && !publicPages.includes(to.path)) {
     next('/login') // Redirect to login if not logged in and not a public page
-
-  else if (isLoggedIn && publicPages.includes(to.path))
+  } 
+  else if (isLoggedIn && publicPages.includes(to.path)) {
     next('/') // Redirect to DASH if logged in and a public page
-
-  else next() // Proceed if logged in or accessing a public page
+  }
+  else if (isLoggedIn && (to.path === '/dashboard' || to.path === '/')) {
+    // Check if user has student role
+    const isStudent = Array.isArray(authStore.user?.roles) &&
+      authStore.user.roles.some(role => role.name.toLowerCase() === 'student' || role.id === 2);
+    
+    // Direct students to student-dashboard, others to regular dashboard
+    if (isStudent) {
+      next('/student-dashboard')
+    } else {
+      next()
+    }
+  }
+  else {
+    next() // Proceed if logged in or accessing a public page
+  }
 })
 
 export default router

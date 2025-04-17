@@ -34,13 +34,14 @@ interface User {
   password: string;
 }
 
+interface Role {
+  id: number;
+  name: string;
+  // Add other role properties if needed
+}
 
-// const schema = yup.object().shape({
-//   email: yup.string().required("email is required!"),
-//   password: yup.string().required("Password is required!"),
-// });
 
-// console.log(import.meta.env.VITE_APP_API_ENDPOINT )
+
 const useAuth = useAuthStore();
 async function handleLogin() {
   loading.value = true; // Start loading indicatorn
@@ -51,7 +52,12 @@ async function handleLogin() {
     .then((response) => {
       console.log('Login successful');
       success.value = true; // Stop loading indicator
-      router.push('/');
+      if (response.user?.roles?.some(role => role.name.toLowerCase() === 'admin')) {
+        router.push('/');
+      } else {
+        router.replace('/student-dashboard');
+      }
+
     })
     .catch((error) => {
       if (axios.isAxiosError(error) && !error.response) {
@@ -80,15 +86,7 @@ async function handleLogin() {
   <div class="auth-wrapper d-flex align-center justify-center pa-4">
     <VCard class="auth-card pa-4 pt-7" max-width="448">
       <VCardItem class="justify-center">
-        <!-- <template #prepend>
-          <div class="d-flex">
-            <div v-html="logo" />
-          </div>
-        </template> -->
 
-        <!-- <VCardTitle class="font-weight-semibold text-2xl text-uppercase">
-          GLobal Ventures
-        </VCardTitle> -->
         <img src="/logo.jpg" alt="" style="inline-size: 100%;">
       </VCardItem>
 

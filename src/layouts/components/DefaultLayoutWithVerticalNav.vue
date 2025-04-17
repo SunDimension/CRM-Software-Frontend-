@@ -52,9 +52,9 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
         -->
         <div class="no-print">
           <h1 class="font-weight-medium leading-normal text-xl text-uppercase" style="color: #c70000">
-            DOCUMENT  <br> MANAGEMENT SOFTWARE
+            CUSTOMER  <br> RELATIONSHIP MGT
           </h1>
-          <h5>Document Management Software</h5>
+          <h5>Customer Relationship Mgt Software</h5>
         </div>
       </RouterLink>
 

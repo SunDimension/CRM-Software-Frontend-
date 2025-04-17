@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import AuthService from '../services/auth.service'
 
-// Define the state interface for type safety
+// Define the state interface
 interface AuthState {
   status: {
     loggedIn: boolean
@@ -10,88 +10,87 @@ interface AuthState {
     id: number
     name: string
     email: string
-    store_id: number
-    branch_id: number
-    branch: any
-    store: any
-    roles: Array<{ id: number; name: string }> | [] // Refined type for roles
-  } | null // Replace with the actual user object type
+    roles: Array<{ id: number; name: string }>
+    loggedIn?: boolean // Optional to match what's stored in localStorage
+  } | null
 }
 
+// Load user from localStorage (decode and parse)
 const savedUser = localStorage.getItem('user')
 const parsedUser = savedUser ? JSON.parse(atob(savedUser)) : null
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
     status: {
-      // loggedIn: JSON.parse(localStorage.getItem('user'))?.loggedIn as boolean ?? false, // Check localStorage for initial state
       loggedIn: parsedUser?.loggedIn ?? false,
     },
-    user: parsedUser ?? null, // Hydrate user from localStorage
+    user: parsedUser ?? null,
   }),
+
   getters: {
     isLoggedIn(): boolean {
       return this.status.loggedIn
     },
-    getUserDetails: (state: any) => {
-      return state.user // Adjust this according to your state structure
-    },
+    getUserDetails: (state: AuthState) => state.user,
   },
+
   actions: {
-    async login(user: any) { // Replace 'any' with actual user type
+    async login(user: any) {
       try {
-        const authService = new AuthService()// !potential issues, revisit
+        const authService = new AuthService()
         const response = await authService.login(user)
 
-        this.user = response.data // Update state directly (no mutations)
-        this.$patch({ status: { loggedIn: true } }) // Patch only changed property for efficiency
+      
+        const userToSave = {
+          ...response.data.user,
+          roles: [{ id: 2, name: response.data.role }],
+          loggedIn: true,
+        }
+
+        this.user = userToSave
+        this.$patch({ status: { loggedIn: true } })
+
+        // Save to localStorage
+        localStorage.setItem('user', btoa(JSON.stringify(userToSave)))
 
         return response
-      }
-      catch (error) {
-        throw error // Re-throw for component handling
+      } catch (error) {
+        throw error
       }
     },
-    async logout() {
-      const authService = new AuthService()// !potential issues, revisit
 
+    async logout() {
+      const authService = new AuthService()
       await authService.logout()
+
       this.user = null
       this.$patch({ status: { loggedIn: false } })
-    },
-    async register(user: any) { // Replace 'any' with actual user type
-      try {
-        const authService = new AuthService()// !potential issues, revisit
-        const response = await authService.register(user)
 
-        // Handle registration logic (e.g., potentially log in the user)
+      // Clear localStorage
+      localStorage.removeItem('user')
+    },
+
+    async register(user: any) {
+      try {
+        const authService = new AuthService()
+        const response = await authService.register(user)
         return response.data
-      }
-      catch (error) {
-        throw error // Re-throw for component handling
+      } catch (error) {
+        throw error
       }
     },
+
     checkLocalStorage() {
       const savedUser = localStorage.getItem('user')
       const parsedUser = savedUser ? JSON.parse(atob(savedUser)) : null
 
-      // console.log(savedUser)
       if (parsedUser) {
         this.user = parsedUser
         this.$patch({ status: { loggedIn: true } })
-      }
-      else {
+      } else {
         this.user = null
         this.$patch({ status: { loggedIn: false } })
       }
     },
   },
-
-  // No mutations needed with direct state updates in actions
-  // Optionally, for complex state updates:
-  // mutations: {
-  //   setUser(state, user: any) {
-  //     state.user = user;
-  //   },
-  // },
 })
