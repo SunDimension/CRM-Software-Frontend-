@@ -1,3 +1,90 @@
+export interface StudentPersonalInformation {
+  student_id?: number
+  student_name: string
+  gender_id: number | null
+  date_of_birth: string
+  phone_number: string
+  email: string
+  marital_status_id: number | null
+  father_name: string
+  mother_name: string
+  passport_number: string
+  passport_issued_date: string
+  passport_expiry_date: string
+  postal_address: string
+  is_completed: boolean
+  created_at?: string
+  updated_at?: string
+}
+export interface StudentEmergencyContact {
+  id?: number
+  student_id: number
+  name: string
+  relationship: string
+  phone_number: string
+  email?: string | null
+  is_completed: boolean
+  created_at?: Date
+  updated_at?: Date
+}
+export interface StudentEducationalQualification {
+  id?: number;
+  student_id: number;
+  qualification_name: string;
+  country_id: number;
+  qualification_obtained: string;
+  grade: string;
+  institution_name: string;
+  year_started_id: number;
+  qualification_order: number; // 1 for first, 2 for second, etc.
+  is_completed: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+export interface Country {
+  id: number;
+  name: string;
+}
+
+export interface Year {
+  id: number;
+  year: string;
+}
+export interface StudentProgramChoice {
+  id?: number;
+  student_id: number;
+  country_id: number;
+  university_id: number;
+  program_id: number;
+  priority: number;
+  is_completed: boolean;
+}
+// types/globalTypes.ts
+export interface ProgramChoice {
+  id?: number;
+  student_id?: number;
+  country_id: number;
+  university_id: number;
+  program_id: number;
+  priority: number;
+  is_completed?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+export interface AboutUs {
+  id?: number;
+  student_id: number;
+  name_of_referal?: string;
+  where_did_you_hear_about_us?: string;
+  parent_guardian?: string;
+  government?: string;
+  ngo?: string;
+  self?: string;
+  phone_number?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface Branch {
   id?: number
   name: string

@@ -149,7 +149,45 @@ const router = createRouter({
               component: () => import('@/pages/setup/primary-folder/index.vue'),
               name: 'primary-folder',
             },
+            {
+              path: 'personal-information-form',
+              component: () => import('@/pages/setup/personal-information-form.vue'),
+              name: 'personal-information-form',
+            },
+            {
+              path: 'emergency-contact',
+              component: () => import('@/pages/setup/emergency-contact.vue'),
+              name: 'emergency-contact',
+            },
+            {
+              path: 'education',
+              component: () => import('@/pages/setup/personal-information-form.vue'),
+              name: 'education',
+            },
+            {
+              path: 'documents',
+              component: () => import('@/pages/setup/personal-information-form.vue'),
+              name: 'documents',
+            },
+            {
+              path: 'student-program-choices',
+              component: () => import('@/pages/setup/student-program-choices.vue'),
+              name: 'student-program-choices',
+              
+            },
+            
+            {
+              path: 'student-educational-qualifications',
+              name: 'student-educational-qualifications',
+              component: () => import('@/pages/setup/student-educational-qualifications.vue')
+            },
 
+            {
+              path: 'about-us',
+              name: 'about-us',
+              component: () => import('@/pages/setup/aboutUs.vue')
+            }
+,            
              {
               path: 'files',
               component: () => import('@/pages/setup/files/index.vue'),
@@ -208,7 +246,8 @@ const router = createRouter({
             { path: 'service-type', component: GenericSetUpComponent, props: { api_route: 'service-types', item_name: 'service-type' }, name: 'service-type' },
 
             { path: 'year', component: GenericSetUpComponent, props: { api_route: 'years', item_name: 'year' }, name: 'year' },
-
+            { path: 'school', component: GenericSetUpComponent, props: { api_route: 'school', item_name: 'school' }, name: 'school' },
+            { path: 'level-of-study', component: GenericSetUpComponent, props: { api_route: 'level-of-study', item_name: 'level-of-study' }, name: 'level-of-study' },
             // Unique Groups
             // { path: 'warehouse', component: GenericSetUpComponent, props: { api_route: 'warehouses', item_name: 'warehouse' }, name: 'warehouse' },
 

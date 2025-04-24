@@ -40,7 +40,7 @@ const fetchData = async () => {
 
         // Fetch companies and years first
         const companyResponse = await makeApiCall<GenericSetUp[]>('GET', '/companies');
-        const yearResponse = await makeApiCall<GenericSetUp[]>('GET', '/years');
+        const yearResponse = await makeApiCall<GenericSetUp[]>('GET', '/year');
 
         // Assign the API data to ref variables
         companies.value = companyResponse.data;
