@@ -67,7 +67,7 @@ async function handleLogin() {
         error_msg.value = "Invalid email or password.";
       } else {
         // Other errors (e.g., server error, unexpected format)
-        error_msg.value = "An error occurred during login. Please try again.";
+        //error_msg.value = "An error occurred during login. Please try again.";
         console.error('Unexpected login error:', error);
       }
     })

@@ -1,6 +1,6 @@
 import 'devextreme/dist/css/dx.light.css';
 import { createApp } from 'vue';
-
+import '@mdi/font/css/materialdesignicons.css'
 import App from '@/App.vue';
 import { registerPlugins } from '@core/utils/plugins';
 import * as filters from './filters';

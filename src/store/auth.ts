@@ -1,23 +1,21 @@
-import { defineStore } from 'pinia'
-import AuthService from '../services/auth.service'
+import { defineStore } from 'pinia';
+import AuthService from '../services/auth.service';
 
-// Define the state interface
 interface AuthState {
   status: {
-    loggedIn: boolean
-  }
+    loggedIn: boolean;
+  };
   user: {
-    id: number
-    name: string
-    email: string
-    roles: Array<{ id: number; name: string }>
-    loggedIn?: boolean // Optional to match what's stored in localStorage
-  } | null
+    id: number;
+    name: string;
+    email: string;
+    roles: Array<{ id: number; name: string }>;
+    loggedIn?: boolean;
+  } | null;
 }
 
-// Load user from localStorage (decode and parse)
-const savedUser = localStorage.getItem('user')
-const parsedUser = savedUser ? JSON.parse(atob(savedUser)) : null
+const savedUser = localStorage.getItem('user');
+const parsedUser = savedUser ? JSON.parse(atob(savedUser)) : null;
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
@@ -29,47 +27,47 @@ export const useAuthStore = defineStore('auth', {
 
   getters: {
     isLoggedIn(): boolean {
-      return this.status.loggedIn
+      return this.status.loggedIn;
     },
     getUserDetails: (state: AuthState) => state.user,
+    isAdmin(): boolean {
+      return this.user?.roles?.some(role => role.name === 'admin') ?? false;
+    },
+    isStudent(): boolean {
+      return this.user?.roles?.some(role => role.name === 'student') ?? false;
+    },
   },
 
   actions: {
     async login(user: any) {
       try {
-        const authService = new AuthService()
-        const response = await authService.login(user)
+        const authService = new AuthService();
+        const response = await authService.login(user);
 
-      
-        const userToSave = {
-          ...response.data.user,
-          roles: [{ id: 2, name: response.data.role }],
+        // The AuthService already formats the user data correctly
+        this.user = {
+          ...response.user,
+          roles: [response.user.role], // role is now properly typed as an object
           loggedIn: true,
-        }
+        };
+        this.$patch({ status: { loggedIn: true } });
 
-        this.user = userToSave
-        this.$patch({ status: { loggedIn: true } })
-
-        // Save to localStorage
-        localStorage.setItem('user', btoa(JSON.stringify(userToSave)))
-
-        return response
+        // No need to save to localStorage here - AuthService already did it
+        return response;
       } catch (error) {
-        throw error
+        this.logout();
+        throw error;
       }
     },
 
     async logout() {
-      const authService = new AuthService()
-      await authService.logout()
-
-      this.user = null
-      this.$patch({ status: { loggedIn: false } })
-
-      // Clear localStorage
-      localStorage.removeItem('user')
+      const authService = new AuthService();
+      await authService.logout();
+      this.user = null;
+      this.$patch({ status: { loggedIn: false } });
     },
 
+    // ... rest of your actions remain the same
     async register(user: any) {
       try {
         const authService = new AuthService()
@@ -94,3 +92,4 @@ export const useAuthStore = defineStore('auth', {
     },
   },
 })
+
