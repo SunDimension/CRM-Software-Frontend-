@@ -4,24 +4,30 @@ import { makeApiCall } from './apiService';
 interface User {
   email: string;
   password: string;
-  username?: string; 
-  role_id?: number;// Optional for login (required for registration)
+  username?: string;
+  role_id?: number;
+}
+
+interface Role {
+  id: number;
+  name: string; // 'admin' or 'student'
 }
 
 interface LoginResponse {
-  user: any;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    role: Role; // Now an object
+  };
   token: string;
-  // Add other properties you expect in the login response
 }
 
 interface RegistrationResponse {
   data: any;
-  // Add properties you expect in the registration response 
-  // (e.g., success message, user ID)
 }
 
 const apiClient = axios.create({
-  // baseURL: '/api', // Base URL from environment variable
   baseURL: import.meta.env.VITE_APP_API_ENDPOINT,
   headers: {
     'Access-Control-Allow-Origin': '*',
@@ -43,17 +49,21 @@ apiClient.interceptors.request.use(
 );
 
 export default class AuthService {
-  constructor() {
-    // You can initialize properties here if needed
-  } 
   async login(user: User): Promise<LoginResponse> {
     try {
-      const response = await apiClient.post<LoginResponse>('/login', {email: user.email, password: user.password,},)
+      const response = await apiClient.post<LoginResponse>('/login', {
+        email: user.email,
+        password: user.password,
+      });
 
-      // console.log("Login response----->", response.data);
       if (response.data.token) {
-      localStorage.setItem('user', btoa(JSON.stringify(response.data)));
-       localStorage.setItem('authToken', response.data.token); 
+        const userData = {
+          ...response.data.user,
+          roles: [response.data.user.role], // Convert role object to roles array
+          loggedIn: true,
+        };
+        localStorage.setItem('user', btoa(JSON.stringify(userData)));
+        localStorage.setItem('authToken', response.data.token);
       }
       return response.data;
     } catch (error: any) {
@@ -64,6 +74,7 @@ export default class AuthService {
 
   logout(): void {
     localStorage.removeItem('user');
+    localStorage.removeItem('authToken');
   }
 
   async register(user: User): Promise<RegistrationResponse> {
@@ -72,10 +83,8 @@ export default class AuthService {
         username: user.username,
         email: user.email,
         password: user.password,
-        role_id: user.role_id 
-       
-      },)
-
+        role_id: user.role_id,
+      });
       return response.data;
     } catch (error: any) {
       console.error("Registration error:", error);

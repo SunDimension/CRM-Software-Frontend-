@@ -1,4 +1,5 @@
 export interface StudentPersonalInformation {
+  id?: number
   student_id?: number
   student_name: string
   gender_id: number | null
