@@ -6,7 +6,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/', redirect: 'dashboard' },
-   
+
     {
       path: '/',
       component: () => import('@/layouts/default.vue'),
@@ -53,12 +53,36 @@ const router = createRouter({
         },
 
         // router.js
-{
-  path: '/audit-trails',
-  name: 'audit-trails',
-  component: () => import('@/components/audit/AuditTrail.vue'),
-  meta: { requiresAuth: true }
-},
+        {
+          path: '/edit-profile',
+          name: 'edit-profile',
+          component: () => import('@/pages/setup/edit-profile.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/document-attached',
+          name: 'document-attached',
+          component: () => import('@/pages/setup/document-attached.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/payment-details',
+          name: 'payment-details',
+          component: () => import('@/pages/setup/payment-details.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/view-application',
+          name: 'view-application',
+          component: () => import('@/pages/setup/view-application.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/audit-trails',
+          name: 'audit-trails',
+          component: () => import('@/components/audit/AuditTrail.vue'),
+          meta: { requiresAuth: true },
+        },
         {
           path: 'store',
           name: 'store-manager',
@@ -124,22 +148,22 @@ const router = createRouter({
               component: () => import('@/pages/setup/uploads/index.vue'),
               name: 'uploads-doc',
             },
-              {
+            {
               path: 'pending-upload',
               component: () => import('@/pages/setup/uploads/list-pending.vue'),
               name: 'pending-upload',
             },
-              {
+            {
               path: 'treat-upload/:id',
               component: () => import('@/pages/setup/uploads/treat-upload.vue'),
               name: 'treat-upload',
             },
-              {
+            {
               path: 'all-uploads',
               component: () => import('@/pages/setup/uploads/all-uploads.vue'),
               name: 'uploads',
             },
-                 {
+            {
               path: 'share-upload',
               component: () => import('@/pages/setup/uploads/share-upload.vue'),
               name: 'share-upload-document',
@@ -166,93 +190,283 @@ const router = createRouter({
             },
             {
               path: 'documents',
-              component: () => import('@/pages/setup/personal-information-form.vue'),
+              component: () => import('@/pages/setup/documents/index.vue'),
               name: 'documents',
             },
             {
               path: 'student-program-choices',
               component: () => import('@/pages/setup/student-program-choices.vue'),
               name: 'student-program-choices',
-              
             },
-            
+
             {
               path: 'student-educational-qualifications',
               name: 'student-educational-qualifications',
-              component: () => import('@/pages/setup/student-educational-qualifications.vue')
+              component: () => import('@/pages/setup/student-educational-qualifications.vue'),
             },
 
             {
               path: 'about-us',
               name: 'about-us',
-              component: () => import('@/pages/setup/aboutUs.vue')
-            }
-,            
-             {
+              component: () => import('@/pages/setup/aboutUs.vue'),
+            },
+            {
               path: 'files',
               component: () => import('@/pages/setup/files/index.vue'),
-              name: 'file'
+              name: 'file',
             },
 
-              {
+            {
               path: 'subfolder',
               component: () => import('@/pages/setup/subfolder/index.vue'),
               name: 'subfolder',
             },
 
             // Basic Entities
-            { path: 'company', component: GenericSetUpComponent, props: { api_route: 'companies', item_name: 'company' }, name: 'company' },
+            {
+              path: 'company',
+              component: GenericSetUpComponent,
+              props: { api_route: 'companies', item_name: 'company' },
+              name: 'company',
+            },
             // { path: 'primary-folder', component: GenericSetUpComponent, props: { api_route: 'primary-folders', item_name: 'primary folder' }, name: 'primary-folder' },
-            { path: 'filetype', component: GenericSetUpComponent, props: { api_route: 'filetypes', item_name: 'file type' }, name: 'file-type' },
-            { path: 'filestatus', component: GenericSetUpComponent, props: { api_route: 'filestatuses', item_name: 'files status' }, name: 'file-status' },
-            { path: 'audit-action', component: GenericSetUpComponent, props: { api_route: 'audit-actions', item_name: 'audit action' }, name: 'audit-action' },
+            {
+              path: 'filetype',
+              component: GenericSetUpComponent,
+              props: { api_route: 'filetypes', item_name: 'file type' },
+              name: 'file-type',
+            },
+            {
+              path: 'filestatus',
+              component: GenericSetUpComponent,
+              props: { api_route: 'filestatuses', item_name: 'files status' },
+              name: 'file-status',
+            },
+            {
+              path: 'audit-action',
+              component: GenericSetUpComponent,
+              props: { api_route: 'audit-actions', item_name: 'audit action' },
+              name: 'audit-action',
+            },
             // { path: 'subfolder', component: GenericSetUpComponent, props: { api_route: 'subfolders', item_name: 'subfolder' }, name: 'subfolder' },
-            { path: 'unit', component: GenericSetUpComponent, props: { api_route: 'units', item_name: 'unit' }, name: 'unit' },
-            { path: 'weight', component: GenericSetUpComponent, props: { api_route: 'weights', item_name: 'weight' }, name: 'weight' },
-            { path: 'status', component: GenericSetUpComponent, props: { api_route: 'statuses', item_name: 'status' }, name: 'status' },
-            { path: 'attribute', component: GenericSetUpComponent, props: { api_route: 'attributes', item_name: 'attribute' }, name: 'attribute' },
-            { path: 'bank', component: GenericSetUpComponent, props: { api_route: 'banks', item_name: 'bank' }, name: 'bank' },
-            { path: 'vendor-type', component: GenericSetUpComponent, props: { api_route: 'vendor-types', item_name: 'vendor type' }, name: 'vendor-type' },
-            { path: 'brand', component: GenericSetUpComponent, props: { api_route: 'brands', item_name: 'brand' }, name: 'brand' },
-            { path: 'payment-type', component: GenericSetUpComponent, props: { api_route: 'payment-types', item_name: 'payment type' }, name: 'payment-type' },
-            { path: 'designation', component: GenericSetUpComponent, props: { api_route: 'designations', item_name: 'designation' }, name: 'designation' },
-            { path: 'payment-terms', component: GenericSetUpComponent, props: { api_route: 'payment-terms', item_name: 'payment terms' }, name: 'payment-terms' },
-            { path: 'carrier', component: GenericSetUpComponent, props: { api_route: 'carriers', item_name: 'carrier' }, name: 'carrier' },
-            { path: 'title', component: GenericSetUpComponent, props: { api_route: 'titles', item_name: 'title' }, name: 'title' },
-            { path: 'role', component: GenericSetUpComponent, props: { api_route: 'roles', item_name: 'role' }, name: 'role' },
-            { path: 'manufacturer', component: GenericSetUpComponent, props: { api_route: 'manufacturers', item_name: 'manufacturer' }, name: 'manufacturer' },
-            { path: 'adjustment-type', component: GenericSetUpComponent, props: { api_route: 'adjustment-types', item_name: 'adjustment type' }, name: 'adjustment-type' },
-            { path: 'discount', component: GenericSetUpComponent, props: { api_route: 'discounts', item_name: 'discount' }, name: 'discount' },
-            { path: 'payment-mode', component: GenericSetUpComponent, props: { api_route: 'payment-modes', item_name: 'payment mode' }, name: 'payment-mode' },
-            { path: 'customer-type', component: GenericSetUpComponent, props: { api_route: 'customer-types', item_name: 'customer type' }, name: 'customer-type' },
-            { path: 'expense-line', component: GenericSetUpComponent, props: { api_route: 'expense-lines', item_name: 'expense-line' }, name: 'expense-line' },
-            { path: 'region', component: GenericSetUpComponent, props: { api_route: 'regions', item_name: 'region' }, name: 'region' },
-            { path: 'cash-discrepancy', component: GenericSetUpComponent, props: { api_route: 'cash-discrepancies', item_name: 'cash-discrepancy' }, name: 'cash-discrepancy' },
+            {
+              path: 'unit',
+              component: GenericSetUpComponent,
+              props: { api_route: 'units', item_name: 'unit' },
+              name: 'unit',
+            },
+            {
+              path: 'weight',
+              component: GenericSetUpComponent,
+              props: { api_route: 'weights', item_name: 'weight' },
+              name: 'weight',
+            },
+            {
+              path: 'status',
+              component: GenericSetUpComponent,
+              props: { api_route: 'statuses', item_name: 'status' },
+              name: 'status',
+            },
+            {
+              path: 'attribute',
+              component: GenericSetUpComponent,
+              props: { api_route: 'attributes', item_name: 'attribute' },
+              name: 'attribute',
+            },
+            {
+              path: 'bank',
+              component: GenericSetUpComponent,
+              props: { api_route: 'banks', item_name: 'bank' },
+              name: 'bank',
+            },
+            {
+              path: 'vendor-type',
+              component: GenericSetUpComponent,
+              props: { api_route: 'vendor-types', item_name: 'vendor type' },
+              name: 'vendor-type',
+            },
+            {
+              path: 'brand',
+              component: GenericSetUpComponent,
+              props: { api_route: 'brands', item_name: 'brand' },
+              name: 'brand',
+            },
+            {
+              path: 'payment-type',
+              component: GenericSetUpComponent,
+              props: { api_route: 'payment-types', item_name: 'payment type' },
+              name: 'payment-type',
+            },
+            {
+              path: 'designation',
+              component: GenericSetUpComponent,
+              props: { api_route: 'designations', item_name: 'designation' },
+              name: 'designation',
+            },
+            {
+              path: 'payment-terms',
+              component: GenericSetUpComponent,
+              props: { api_route: 'payment-terms', item_name: 'payment terms' },
+              name: 'payment-terms',
+            },
+            {
+              path: 'carrier',
+              component: GenericSetUpComponent,
+              props: { api_route: 'carriers', item_name: 'carrier' },
+              name: 'carrier',
+            },
+            {
+              path: 'title',
+              component: GenericSetUpComponent,
+              props: { api_route: 'titles', item_name: 'title' },
+              name: 'title',
+            },
+            {
+              path: 'role',
+              component: GenericSetUpComponent,
+              props: { api_route: 'roles', item_name: 'role' },
+              name: 'role',
+            },
+            {
+              path: 'manufacturer',
+              component: GenericSetUpComponent,
+              props: { api_route: 'manufacturers', item_name: 'manufacturer' },
+              name: 'manufacturer',
+            },
+            {
+              path: 'adjustment-type',
+              component: GenericSetUpComponent,
+              props: { api_route: 'adjustment-types', item_name: 'adjustment type' },
+              name: 'adjustment-type',
+            },
+            {
+              path: 'discount',
+              component: GenericSetUpComponent,
+              props: { api_route: 'discounts', item_name: 'discount' },
+              name: 'discount',
+            },
+            {
+              path: 'payment-mode',
+              component: GenericSetUpComponent,
+              props: { api_route: 'payment-modes', item_name: 'payment mode' },
+              name: 'payment-mode',
+            },
+            {
+              path: 'customer-type',
+              component: GenericSetUpComponent,
+              props: { api_route: 'customer-types', item_name: 'customer type' },
+              name: 'customer-type',
+            },
+            {
+              path: 'expense-line',
+              component: GenericSetUpComponent,
+              props: { api_route: 'expense-lines', item_name: 'expense-line' },
+              name: 'expense-line',
+            },
+            {
+              path: 'region',
+              component: GenericSetUpComponent,
+              props: { api_route: 'regions', item_name: 'region' },
+              name: 'region',
+            },
+            {
+              path: 'cash-discrepancy',
+              component: GenericSetUpComponent,
+              props: { api_route: 'cash-discrepancies', item_name: 'cash-discrepancy' },
+              name: 'cash-discrepancy',
+            },
 
-            { path: 'reason', component: GenericSetUpComponent, props: { api_route: 'reasons', item_name: 'reason' }, name: 'reason' },
+            {
+              path: 'reason',
+              component: GenericSetUpComponent,
+              props: { api_route: 'reasons', item_name: 'reason' },
+              name: 'reason',
+            },
 
-            { path: 'settle-credit', component: GenericSetUpComponent, props: { api_route: 'settle-credits', item_name: 'settle-credit' }, name: 'settle-credit' },
+            {
+              path: 'settle-credit',
+              component: GenericSetUpComponent,
+              props: { api_route: 'settle-credits', item_name: 'settle-credit' },
+              name: 'settle-credit',
+            },
 
-            { path: 'inflow-status', component: GenericSetUpComponent, props: { api_route: 'inflow-statuses', item_name: 'inflow-status' }, name: 'inflow-status' },
+            {
+              path: 'inflow-status',
+              component: GenericSetUpComponent,
+              props: { api_route: 'inflow-statuses', item_name: 'inflow-status' },
+              name: 'inflow-status',
+            },
 
-            { path: 'outflow-mode', component: GenericSetUpComponent, props: { api_route: 'outflow-modes', item_name: 'outflow-mode' }, name: 'outflow-mode' },
+            {
+              path: 'outflow-mode',
+              component: GenericSetUpComponent,
+              props: { api_route: 'outflow-modes', item_name: 'outflow-mode' },
+              name: 'outflow-mode',
+            },
 
-            { path: 'post-inflow', component: GenericSetUpComponent, props: { api_route: 'post-inflow', item_name: 'post-inflows' }, name: 'post-inflow' },
+            {
+              path: 'post-inflow',
+              component: GenericSetUpComponent,
+              props: { api_route: 'post-inflow', item_name: 'post-inflows' },
+              name: 'post-inflow',
+            },
 
-            { path: 'post-outflow', component: GenericSetUpComponent, props: { api_route: 'post-outflow', item_name: 'post-outflows' }, name: 'post-outflow' },
+            {
+              path: 'post-outflow',
+              component: GenericSetUpComponent,
+              props: { api_route: 'post-outflow', item_name: 'post-outflows' },
+              name: 'post-outflow',
+            },
 
             // { path: 'customer', component: GenericSetUpComponent, props: { api_route: 'customers', item_name: 'customer' }, name: 'customer' },
 
-            { path: 'service-type', component: GenericSetUpComponent, props: { api_route: 'service-types', item_name: 'service-type' }, name: 'service-type' },
+            {
+              path: 'service-type',
+              component: GenericSetUpComponent,
+              props: { api_route: 'service-types', item_name: 'service-type' },
+              name: 'service-type',
+            },
 
-            { path: 'year', component: GenericSetUpComponent, props: { api_route: 'years', item_name: 'year' }, name: 'year' },
-            { path: 'school', component: GenericSetUpComponent, props: { api_route: 'school', item_name: 'school' }, name: 'school' },
-            { path: 'level-of-study', component: GenericSetUpComponent, props: { api_route: 'level-of-study', item_name: 'level-of-study' }, name: 'level-of-study' },
+            {
+              path: 'year',
+              component: GenericSetUpComponent,
+              props: { api_route: 'years', item_name: 'year' },
+              name: 'year',
+            },
+            {
+              path: 'school',
+              component: GenericSetUpComponent,
+              props: { api_route: 'school', item_name: 'school' },
+              name: 'school',
+            },
+            {
+              path: 'level-of-study',
+              component: GenericSetUpComponent,
+              props: { api_route: 'level-of-study', item_name: 'level-of-study' },
+              name: 'level-of-study',
+            },
+            {
+              path: 'social-media',
+              component: GenericSetUpComponent,
+              props: { api_route: 'social-media', item_name: 'social-media' },
+              name: 'social-media',
+            },
+            {
+              path: 'file-type',
+              component: GenericSetUpComponent,
+              props: { api_route: 'file-type', item_name: 'file-type' },
+              name: 'file-type',
+            },
             // Unique Groups
             // { path: 'warehouse', component: GenericSetUpComponent, props: { api_route: 'warehouses', item_name: 'warehouse' }, name: 'warehouse' },
 
             // Question Routes
-            { path: 'tax', component: GenericSetUpComponent, props: { api_route: 'taxes', item_name: 'tax' }, name: 'tax' },
+            {
+              path: 'tax',
+              component: GenericSetUpComponent,
+              props: { api_route: 'taxes', item_name: 'tax' },
+              name: 'tax',
+            },
 
             // ... other children for the 'setup' route (if any)
           ],
@@ -261,7 +475,8 @@ const router = createRouter({
         {
           path: 'account',
           name: 'account',
-          children: [ // Nested children for the 'setup' route
+          children: [
+            // Nested children for the 'setup' route
             {
               path: 'group',
               component: () => import('@/pages/accounts/account_group/index.vue'),
@@ -288,13 +503,13 @@ const router = createRouter({
             //   component: () => import('@/pages/accounts/journal-type/index.vue'),
             //   name: 'journal-type',
             // },
-
           ],
         },
         {
           path: 'journal',
           name: 'journal',
-          children: [ // Nested children for the 'setup' route
+          children: [
+            // Nested children for the 'setup' route
             {
               path: 'type',
               component: () => import('@/pages/accounts/journal-type/index.vue'),
@@ -311,7 +526,8 @@ const router = createRouter({
         {
           path: 'voucher',
           name: 'voucher',
-          children: [ // Nested children for the 'setup' route
+          children: [
+            // Nested children for the 'setup' route
             {
               path: 'wizard',
               component: () => import('@/pages/payments/payment-wizard.vue'),
@@ -322,7 +538,8 @@ const router = createRouter({
         {
           path: 'approval-setup',
           name: 'approval-setup',
-          children: [ // Nested children for the 'setup' route
+          children: [
+            // Nested children for the 'setup' route
             {
               path: 'process-flow',
               component: () => import('@/pages/approvalsetup/process-flow/index.vue'),
@@ -348,7 +565,6 @@ const router = createRouter({
               component: () => import('@/pages/approvalsetup/process-module/index.vue'),
               name: 'process-module',
             },
-
           ],
         },
 
@@ -391,7 +607,7 @@ const router = createRouter({
               component: () => import('@/pages/remittance/cashierexpense/list-pending.vue'),
               name: 'pending-expense',
             },
-               {
+            {
               path: 'all-expense',
               component: () => import('@/pages/remittance/cashierexpense/all-expense.vue'),
               name: 'expense-order',
@@ -411,22 +627,22 @@ const router = createRouter({
               component: () => import('@/pages/remittance/cashierRemittance/index.vue'),
               name: 'cashierRemittance',
             },
-              {
+            {
               path: 'pending-remittance',
               component: () => import('@/pages/remittance/cashierRemittance/list-pending.vue'),
               name: 'pending-remittance',
             },
-               {
+            {
               path: 'all-remittance',
               component: () => import('@/pages/remittance/chiefcashier/all-remittance.vue'),
               name: 'cash-order',
             },
-             {
+            {
               path: 'treat-remittance/:no',
               component: () => import('@/pages/remittance/cashierRemittance/treat-remittance.vue'),
               name: 'treat-remittance-page',
             },
-             {
+            {
               path: 'print-remittance/:no',
               component: () => import('@/pages/remittance/cashierRemittance/print.vue'),
               name: 'print-remittance',
@@ -436,7 +652,7 @@ const router = createRouter({
               component: () => import('@/pages/remittance/bankremittance/index.vue'),
               name: 'bankremittance',
             },
-              {
+            {
               path: 'bank-pending',
               component: () => import('@/pages/remittance/bankremittance/list-pending.vue'),
               name: 'pending-bank-remittance',
@@ -446,12 +662,12 @@ const router = createRouter({
               component: () => import('@/pages/remittance/bankremittance/treat-bank.vue'),
               name: 'treat-bank-remit',
             },
-              {
+            {
               path: 'print-bank-remit/:no',
               component: () => import('@/pages/remittance/bankremittance/print.vue'),
               name: 'print-bank-remit',
             },
-                   {
+            {
               path: 'all-bank-remit',
               component: () => import('@/pages/remittance/bankremittance/all-bank-remit.vue'),
               name: 'bank-rmit',
@@ -710,7 +926,7 @@ const router = createRouter({
               component: () => import('@/pages/inventory/store-items/index.vue'),
               name: 'store-items',
             },
-              {
+            {
               path: 'set-limits',
               component: () => import('@/pages/inventory/set-limits/index.vue'),
               name: 'set-limits',
@@ -738,7 +954,6 @@ const router = createRouter({
           path: 'banking',
           name: 'banking',
           children: [
-
             {
               path: '/banking/all-inflow',
               component: () => import('@/pages/Banking/all-inflow/index.vue'),
@@ -785,27 +1000,25 @@ router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   const isLoggedIn = authStore.status.loggedIn
   const publicPages = ['/login', '/register'] // Allow access to login/register
-  
+
   // Check if the user is logged in
   if (!isLoggedIn && !publicPages.includes(to.path)) {
     next('/login') // Redirect to login if not logged in and not a public page
-  } 
-  else if (isLoggedIn && publicPages.includes(to.path)) {
+  } else if (isLoggedIn && publicPages.includes(to.path)) {
     next('/') // Redirect to DASH if logged in and a public page
-  }
-  else if (isLoggedIn && (to.path === '/dashboard' || to.path === '/')) {
+  } else if (isLoggedIn && (to.path === '/dashboard' || to.path === '/')) {
     // Check if user has student role
-    const isStudent = Array.isArray(authStore.user?.roles) &&
-      authStore.user.roles.some(role => role.name.toLowerCase() === 'student' || role.id === 2);
-    
+    const isStudent =
+      Array.isArray(authStore.user?.roles) &&
+      authStore.user.roles.some(role => role.name.toLowerCase() === 'student' || role.id === 2)
+
     // Direct students to student-dashboard, others to regular dashboard
     if (isStudent) {
       next('/student-dashboard')
     } else {
       next()
     }
-  }
-  else {
+  } else {
     next() // Proceed if logged in or accessing a public page
   }
 })

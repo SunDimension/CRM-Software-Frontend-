@@ -17,75 +17,99 @@ export interface StudentPersonalInformation {
   created_at?: string
   updated_at?: string
 }
-export interface StudentEmergencyContact {
+export interface EmergencyContact {
   id?: number
-  student_id: number
+  student_id: number | null
   name: string
   relationship: string
+  relationship_id?: number | null
   phone_number: string
-  email?: string | null
+  email: string
   is_completed: boolean
-  created_at?: Date
-  updated_at?: Date
+  created_at?: string
+  updated_at?: string
 }
 export interface StudentEducationalQualification {
-  id?: number;
-  student_id: number;
-  qualification_name: string;
-  country_id: number;
-  qualification_obtained: string;
-  grade: string;
-  institution_name: string;
-  year_started_id: number;
-  qualification_order: number; // 1 for first, 2 for second, etc.
-  is_completed: boolean;
-  created_at?: string;
-  updated_at?: string;
+  id?: number
+  student_id: number
+  personal_information_id: number
+  qualification_name: string // Name of the qualification (e.g., "Bachelor of Science")
+  qualification_obtained_id: number // Qualification obtained (e.g., "Degree", "Diploma")
+  grade: string // Grade achieved (e.g., "A", "B")
+  country_id: number // ID of the country
+  institution_name: string // Name of the institution
+  year_started_id: number // ID of the year started
+  year_finished_id: number // ID of the year finished
+  qualification_order: number // Order of the qualification (e.g., 1, 2, 3)
+  is_completed: boolean
+  created_at?: string
+  updated_at?: string
 }
 export interface Country {
-  id: number;
-  name: string;
+  id: number
+  name: string
 }
 
 export interface Year {
-  id: number;
-  year: string;
+  id: number
+  year: string
 }
 export interface StudentProgramChoice {
-  id?: number;
-  student_id: number;
-  country_id: number;
-  university_id: number;
-  program_id: number;
-  priority: number;
-  is_completed: boolean;
+  id?: number
+  student_id: number
+  country_id: number
+  university_id: number
+  program_id: number
+  priority: number
+  is_completed: boolean
 }
 // types/globalTypes.ts
 export interface ProgramChoice {
-  id?: number;
-  student_id?: number;
-  country_id: number;
-  university_id: number;
-  program_id: number;
-  priority: number;
-  is_completed?: boolean;
-  created_at?: string;
-  updated_at?: string;
+  id?: number
+  student_id?: number
+  country_id: number
+  university_id: number
+  program_id: number
+  priority: number
+  is_completed?: boolean
+  created_at?: string
+  updated_at?: string
 }
 export interface AboutUs {
-  id?: number;
-  student_id: number;
-  name_of_referal?: string;
-  where_did_you_hear_about_us?: string;
-  parent_guardian?: string;
-  government?: string;
-  ngo?: string;
-  self?: string;
-  phone_number?: string;
-  created_at?: string;
-  updated_at?: string;
+  id?: number
+  student_id: string
+  name_of_referal: string
+  social_media_id: number | null
+  parent_guardian: string
+  government: string
+  ngo: string
+  self: string
+  is_completed?: boolean
+}
+export interface Relationship {
+  id: number
+  name: string
 }
 
+export interface Country {
+  id: number
+  name: string
+}
+export interface Gender {
+  id: number
+  name: string
+}
+
+export interface MaritalStatus {
+  id: number
+  name: string
+}
+
+export interface SnackbarState {
+  show: boolean
+  text: string
+  color: string
+}
 export interface Branch {
   id?: number
   name: string
@@ -133,46 +157,40 @@ export interface Release {
 
 export interface PrimaryFolder {
   id?: number
-  name:string
+  name: string
   year_id: number
   company_id: number
-
 }
 
 export interface UploadDoc {
-  id?: number;
-  subfolder_id: number | { id: number; name: string }; // Supports ID or full object
-  file_title: string;
-  filetype_id: number | { id: number; name: string }; // Supports ID or full object
-  file_description: string;
-  financial_value?: string;
-  file_expiry_date?: string | Date;
-  attach_file: number | { id: number; name: string; file_url: string }; // Supports ID or full object
-  upload?: Upload;
-  created_at: string | Date;
+  id?: number
+  subfolder_id: number | { id: number; name: string } // Supports ID or full object
+  file_title: string
+  filetype_id: number | { id: number; name: string } // Supports ID or full object
+  file_description: string
+  financial_value?: string
+  file_expiry_date?: string | Date
+  attach_file: number | { id: number; name: string; file_url: string } // Supports ID or full object
+  upload?: Upload
+  created_at: string | Date
 
   // Add these properties
   company?: {
-    id: number;
-    name: string;
-  };
+    id: number
+    name: string
+  }
   primary_folder?: {
-    id: number;
-    name: string;
-  };
+    id: number
+    name: string
+  }
 }
-
-
 
 export interface Subfolder {
   id?: number
-  name:string
+  name: string
   primary_folder_id: number
-  company_name: string; // Add this field
-  
-
+  company_name: string // Add this field
 }
-
 
 export interface Customer {
   id?: number
@@ -221,8 +239,7 @@ export interface User {
   password?: string
 
   roles?: number
- 
- 
+
   created_at?: string
 }
 
@@ -232,9 +249,9 @@ export interface GenericSetUp {
 }
 
 export interface Upload {
-    id: number;
-    file_name: string;
-    file_path: string;
+  id: number
+  file_name: string
+  file_path: string
 }
 
 export interface Vendor {
@@ -251,8 +268,8 @@ export interface Vendor {
   contact_email: string
   image_url: string
   tin: string
-  	bank: number
-  	account_number: string
+  bank: number
+  account_number: string
   account_name: string
 }
 
@@ -364,13 +381,12 @@ export interface CashExpense {
   amount: number
   date: Date
   user_id: number
-  user_name:string
-  store_id:number
-  created_at:Date
+  user_name: string
+  store_id: number
+  created_at: Date
   approval_date: Date
-  approved_by:number
+  approved_by: number
 }
-
 
 export interface CashierRemittance {
   id: number
@@ -384,26 +400,26 @@ export interface CashierRemittance {
   discrepancy_amount: number
   date: Date
   user_id: number
-  user_name:string
-  store_id:number
-  store_name:string
-  created_at:Date
+  user_name: string
+  store_id: number
+  store_name: string
+  created_at: Date
 }
 
 export interface BankRemittance {
   id: number
- 
+
   bank_id: number
   bank_name: string
   branch_id: number
   branch_name: string
   amount: number
-  account_number:number
+  account_number: number
   date: Date
   user_id: number
-  user_name:string
-  store_id:number
-  created_at:Date
+  user_name: string
+  store_id: number
+  created_at: Date
 }
 export interface CreditTransactionResource {
   branch_id: number
@@ -424,7 +440,6 @@ export interface SettleCredit {
   current_debt?: number
   settlement_amount: number
   settlement_date: Date
-
 }
 
 export interface InventoryItem {
@@ -568,7 +583,6 @@ export interface InventoryAdjustment {
   selling_price?: number
 
   // ... (other fields based on your InventoryAdjustment type)
-
 }
 
 export interface ApprovalLimit {
@@ -698,7 +712,7 @@ export interface SalesReceiptResource {
   sales_order_id: number // Foreign key referencing the Sales Order
   sales_invoice_id: number // Foreign key referencing the Sales Invoice
   customer_id: number
-  customer_name: string// Foreign key referencing the customer
+  customer_name: string // Foreign key referencing the customer
   branch_id: number // Foreign key referencing the branch
   store_id: number // Foreign key referencing the store
   cashier_id: number
@@ -746,7 +760,6 @@ export interface StoreItem {
   quantity_holding?: number
   store_id: number
   discount?: number // Optional if nullable, else defaults to 0 in back-end
-
 }
 
 // export interface SalesReleaseResource{

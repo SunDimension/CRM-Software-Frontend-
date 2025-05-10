@@ -51,8 +51,8 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
           />
         -->
         <div class="no-print">
-          <h1 class="font-weight-medium leading-normal text-xl text-uppercase" style="color: #c70000">
-            CUSTOMER  <br> RELATIONSHIP MGT
+          <h1 class="font-weight-medium leading-normal text-xl text-uppercase" style="color: #960aca">
+            CUSTOMER <br> RELATIONSHIP MGT
           </h1>
           <h5>Customer Relationship Mgt Software</h5>
         </div>

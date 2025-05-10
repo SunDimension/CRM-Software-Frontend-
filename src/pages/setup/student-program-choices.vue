@@ -3,7 +3,7 @@
     <v-container>
         <v-row justify="center" class="mb-4">
             <v-col cols="12" md="6" class="text-center">
-                <v-img src="/ieisLogo.jpg" alt="IEIS Logo" class="mx-auto mb-4" max-width="50"></v-img>
+                <v-img src="/logo.jpg" alt="IEIS Logo" class="mx-auto mb-4" max-width="50"></v-img>
                 <h1 class="text-h4 font-weight-bold text-center">APPLICATION FORM</h1>
             </v-col>
         </v-row>
@@ -31,6 +31,7 @@
                 Program Choices
                 <v-icon v-if="formStatus.programChoices" end color="green">mdi-check-circle</v-icon>
             </v-tab>
+
             <v-tab :to="{ name: 'about-us' }">
                 <v-icon start>mdi-information-outline</v-icon>
                 About Us
@@ -45,7 +46,7 @@
         </v-tabs>
 
         <v-card class="mt-4 pa-6">
-            <v-overlay :model-value="loading" absolute>
+            <v-overlay :model-value="loading" class="align-center justify-center">
                 <v-progress-circular indeterminate size="64"></v-progress-circular>
             </v-overlay>
 
@@ -53,25 +54,41 @@
                 <v-row>
                     <v-col cols="12" md="6">
                         <v-select :items="countries" item-title="name" item-value="id" label="Select Country"
-                            v-model="form.country_id" :rules="[rules.required]" density="compact" outlined></v-select>
+                            v-model="form.country_id" :rules="[rules.required]" density="compact"
+                            variant="outlined"></v-select>
                     </v-col>
 
                     <v-col cols="12" md="6">
                         <v-select :items="universities" item-title="name" item-value="id" label="Select University"
                             v-model="form.university_id" :rules="[rules.required]" density="compact"
-                            outlined></v-select>
+                            variant="outlined"></v-select>
                     </v-col>
 
                     <v-col cols="12" md="6">
                         <v-select :items="programs" item-title="name" item-value="id" label="Select Program"
-                            v-model="form.program_id" :rules="[rules.required]" density="compact" outlined></v-select>
+                            v-model="form.program_id" :rules="[rules.required]" density="compact"
+                            variant="outlined"></v-select>
                     </v-col>
 
                     <v-col cols="12" md="6">
-                        <v-text-field label="Priority" v-model="form.priority" type="number" :rules="[rules.required]"
-                            density="compact" outlined></v-text-field>
+                        <v-text-field label="First Choice" v-model="form.first_choice" :rules="[rules.required]"
+                            density="compact" variant="outlined"></v-text-field>
+                    </v-col>
+                </v-row>
+
+                <v-row>
+                    <v-col cols="12" md="6">
+                        <v-text-field label="Second Choice" v-model="form.second_choice" :rules="[rules.required]"
+                            density="compact" variant="outlined"></v-text-field>
                     </v-col>
 
+                    <v-col cols="12" md="6">
+                        <v-text-field label="Third Choice" v-model="form.third_choice" :rules="[rules.required]"
+                            density="compact" variant="outlined"></v-text-field>
+                    </v-col>
+                </v-row>
+
+                <v-row>
                     <v-col cols="12">
                         <v-card-actions>
                             <v-btn color="primary" variant="outlined" size="large" class="mr-2" @click="goBack"
@@ -80,8 +97,7 @@
                                 Previous
                             </v-btn>
                             <v-spacer></v-spacer>
-                            <v-btn color="primary" size="large" type="submit" :loading="loading"
-                                :disabled="!valid || loading">
+                            <v-btn color="primary" size="large" type="submit" :loading="loading" :disabled="loading">
                                 Save Form
                             </v-btn>
                             <v-btn color="success" size="large" @click="goToNextSection"
@@ -104,33 +120,26 @@
     </v-container>
 </template>
 
-<script lang="ts" setup>
-import { ref, reactive, onMounted, watch } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import type { AxiosRequestConfig } from 'axios';
+<script setup lang="ts">
 import { makeApiCall } from '@/services/apiService';
-import type { GenericSetUp } from '@/types/globalTypes';
-import type { ProgramChoice } from '@/types/globalTypes';
+import type { GenericSetUp, ProgramChoice } from '@/types/globalTypes';
+import type { AxiosRequestConfig } from 'axios';
+import { onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 // Reference variables
 const router = useRouter();
-const route = useRoute();
 const formRef = ref(null);
 const valid = ref(false);
 const activeTab = ref(3); // Program choices is the 4th tab (0-indexed)
 const loading = ref(false);
 
-// Form data
-const form = ref<ProgramChoice>({
-    country_id: null,
-    university_id: null,
-    program_id: null,
-    priority: 1
+// Snackbar for notifications
+const snackbar = reactive({
+    show: false,
+    text: '',
+    color: 'info',
 });
-
-// Data for dropdowns
-const countries = ref<GenericSetUp[]>([]);
-const universities = ref<GenericSetUp[]>([]);
-const programs = ref<GenericSetUp[]>([]);
 
 // Form status tracking
 const formStatus = reactive({
@@ -142,36 +151,41 @@ const formStatus = reactive({
     documents: false,
 });
 
-// Notifications
-const snackbar = reactive({
-    show: false,
-    text: '',
-    color: ''
+// Form data
+const form = ref({
+    id: null,
+    country_id: null,
+    university_id: null,
+    program_id: null,
+    first_choice: '',
+    second_choice: '',
+    third_choice: '',
+    is_completed: false
 });
+
+// Get personal information ID from localStorage
+const personalInformationId = ref<number | null>(null);
+const storedAppId = localStorage.getItem('applicationId');
+if (storedAppId) {
+    personalInformationId.value = parseInt(storedAppId);
+    console.log('Using Personal Information ID:', personalInformationId.value);
+} else {
+    console.error('Personal Information ID not found in localStorage.');
+    router.push({ name: 'personal-information-form' });
+}
 
 // Validation rules
 const rules = {
     required: (v: any) => !!v || 'This field is required',
 };
 
-// Get personal information ID from route params
-const personalInformationId = Number(route.params.personalInformationId || 1);
-console.log('Personal Information ID:', personalInformationId);
-// API functions using makeApiCall
-async function getProgramChoices(personalInformationId: number, config?: AxiosRequestConfig) {
-    return makeApiCall<ProgramChoice[]>(
-        'GET',
-        `/personal-information/${personalInformationId}/program-choices`,
-        undefined,
-        config
-    );
-}
+// Other reactive variables
+const countries = ref<GenericSetUp[]>([]);
+const universities = ref<GenericSetUp[]>([]);
+const programs = ref<GenericSetUp[]>([]);
 
-async function createProgramChoice(
-    personalInformationId: number,
-    programChoiceData: Partial<ProgramChoice>,
-    config?: AxiosRequestConfig
-) {
+// API functions
+async function createProgramChoice(personalInformationId: number, programChoiceData: Partial<ProgramChoice>, config?: AxiosRequestConfig) {
     return makeApiCall<ProgramChoice>(
         'POST',
         `/personal-information/${personalInformationId}/program-choices`,
@@ -180,11 +194,7 @@ async function createProgramChoice(
     );
 }
 
-async function updateProgramChoice(
-    programChoiceId: number,
-    programChoiceData: Partial<ProgramChoice>,
-    config?: AxiosRequestConfig
-) {
+async function updateProgramChoice(programChoiceId: number, programChoiceData: Partial<ProgramChoice>, config?: AxiosRequestConfig) {
     return makeApiCall<ProgramChoice>(
         'PUT',
         `/program-choices/${programChoiceId}`,
@@ -197,71 +207,12 @@ async function markProgramChoiceAsComplete(programChoiceId: number, config?: Axi
     return makeApiCall<ProgramChoice>(
         'POST',
         `/program-choices/${programChoiceId}/complete`,
-        {},
-        config
+        undefined,
+        config,
     );
 }
 
-// Function to check form statuses from individual endpoints instead of a single form-status endpoint
-async function checkFormStatus() {
-    try {
-        // For each section, we'll check if it exists and is completed
-
-        // 1. Personal Information - assume it's completed if we have the ID
-        formStatus.personalInfo = !!personalInformationId;
-
-        // 2. Emergency Contact - check if there's associated emergency contact
-        try {
-            const emergencyResponse = await makeApiCall('GET', `/personal-information/${personalInformationId}/emergency-contacts`);
-            formStatus.emergencyContact = emergencyResponse.data && emergencyResponse.data.length > 0 &&
-                emergencyResponse.data[0]?.is_completed;
-        } catch (error) {
-            console.error('Error checking emergency contact status:', error);
-            formStatus.emergencyContact = false;
-        }
-
-        // 3. Educational Qualifications
-        try {
-            const educationResponse = await makeApiCall('GET', `/personal-information/${personalInformationId}/educational-qualifications`);
-            formStatus.education = educationResponse.data && educationResponse.data.length > 0 &&
-                educationResponse.data[0]?.is_completed;
-        } catch (error) {
-            console.error('Error checking education status:', error);
-            formStatus.education = false;
-        }
-
-        // 4. Program Choices - will be set in fetchProgramChoice()
-
-        // 5. About Us - Simple checked flag in localStorage if actual API doesn't exist
-        formStatus.aboutUs = localStorage.getItem('aboutUsCompleted') === 'true';
-
-        // 6. Documents
-        try {
-            const documentsResponse = await makeApiCall('GET', `/personal-information/${personalInformationId}/documents`);
-            formStatus.documents = documentsResponse.data && documentsResponse.data.length > 0 &&
-                documentsResponse.data[0]?.is_completed;
-        } catch (error) {
-            console.error('Error checking documents status:', error);
-            formStatus.documents = false;
-        }
-    } catch (error) {
-        console.error('Error checking form statuses:', error);
-    }
-}
-
-
-onMounted(() => {
-    Promise.all([
-        fetchCountries(),
-        fetchUniversities(),
-        fetchPrograms()
-    ]);
-});
-// Watch for changes in form.is_completed to update formStatus.programChoices
-watch(() => form.value.is_completed, (newValue) => {
-    formStatus.programChoices = !!newValue;
-});
-
+// Fetch data
 async function fetchCountries() {
     try {
         const response = await makeApiCall<GenericSetUp[]>('GET', '/countries');
@@ -292,33 +243,49 @@ async function fetchPrograms() {
     }
 }
 
-async function fetchProgramChoice() {
-    try {
-        const response = await getProgramChoices(personalInformationId);
-        const choices = response.data;
+async function fetchProgramChoices() {
+    if (!personalInformationId.value) {
+        console.error('No personal information ID provided');
+        showSnackbar('Failed to load program choices: Missing personal information ID', 'error');
+        return;
+    }
 
-        if (choices && choices.length > 0) {
-            const choice = choices[0];
+    loading.value = true;
+    try {
+        // Fetch program choices for this personal information
+        const response = await makeApiCall<ProgramChoice[]>(
+            'GET',
+            `/personal-information/${personalInformationId.value}/program-choices`
+        );
+
+        // If we have program choices data
+        if (response.data && response.data.length > 0) {
+            const programChoice = response.data[0]; // Get the first one
+
+            // Update form with existing data
             form.value = {
-                id: choice.id,
-                student_id: choice.student_id,
-                country_id: choice.country_id,
-                university_id: choice.university_id,
-                program_id: choice.program_id,
-                priority: choice.priority,
-                is_completed: choice.is_completed
+                id: programChoice.id,
+                country_id: programChoice.country_id,
+                university_id: programChoice.university_id,
+                program_id: programChoice.program_id,
+                first_choice: programChoice.first_choice,
+                second_choice: programChoice.second_choice,
+                third_choice: programChoice.third_choice,
+                is_completed: programChoice.is_completed || false
             };
-            formStatus.programChoices = choice.is_completed || false;
+
+            // Update form status based on is_completed
+            formStatus.programChoices = programChoice.is_completed || false;
         }
     } catch (error) {
-        console.error('Error fetching program choice:', error);
-        // Only show error if it's not a 404 (which could mean new form)
-        if (error.response?.status !== 404) {
-            showSnackbar('Failed to load program choice information', 'error');
-        }
+        console.error('Error fetching program choices:', error);
+        showSnackbar('Failed to load program choices', 'error');
+    } finally {
+        loading.value = false;
     }
 }
 
+// Submit form
 async function submit() {
     if (formRef.value) {
         const { valid: isValid } = await formRef.value.validate();
@@ -328,41 +295,40 @@ async function submit() {
     loading.value = true;
 
     try {
-        // Prepare form data for submission
         const formData = {
             country_id: form.value.country_id,
             university_id: form.value.university_id,
             program_id: form.value.program_id,
-            priority: form.value.priority
+            first_choice: form.value.first_choice,
+            second_choice: form.value.second_choice,
+            third_choice: form.value.third_choice,
         };
 
         let response;
 
         if (form.value.id) {
-            // Update existing program choice
+            // Update existing record
             response = await updateProgramChoice(form.value.id, formData);
-            // Mark as complete
-            await markProgramChoiceAsComplete(form.value.id);
+            showSnackbar('Program choices updated successfully!', 'success');
         } else {
-            // Create new program choice
-            response = await createProgramChoice(personalInformationId, formData);
+            // Create new record
+            if (!personalInformationId.value) {
+                throw new Error('No personal information ID provided');
+            }
+            response = await createProgramChoice(personalInformationId.value, formData);
             form.value.id = response.data.id;
-            // Mark as complete
-            await markProgramChoiceAsComplete(form.value.id);
+            showSnackbar('Program choices saved successfully!', 'success');
         }
 
-        // Update local state
+        // Mark as complete
+        await markProgramChoiceAsComplete(form.value.id);
+
+        // Update status
         form.value.is_completed = true;
         formStatus.programChoices = true;
-
-        showSnackbar('Program choice saved successfully!', 'success');
     } catch (error) {
-        console.error('Error saving program choice:', error);
-        let errorMessage = 'Failed to save program choice';
-        if (error.response?.data?.message) {
-            errorMessage = error.response.data.message;
-        }
-        showSnackbar(errorMessage, 'error');
+        console.error('Error saving program choices:', error);
+        showSnackbar('Failed to save program choices', 'error');
     } finally {
         loading.value = false;
     }
@@ -386,4 +352,21 @@ function showSnackbar(text: string, color: string = 'info') {
         snackbar.show = false;
     }, 5000);
 }
+
+onMounted(async () => {
+    loading.value = true;
+    try {
+        // Fetch all required data in parallel
+        await Promise.all([
+            fetchCountries(),
+            fetchUniversities(),
+            fetchPrograms(),
+            fetchProgramChoices() // Fetch existing program choices
+        ]);
+    } catch (error) {
+        console.error('Error during initialization:', error);
+    } finally {
+        loading.value = false;
+    }
+});
 </script>

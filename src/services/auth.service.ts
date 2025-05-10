@@ -51,19 +51,37 @@ apiClient.interceptors.request.use(
 export default class AuthService {
   async login(user: User): Promise<LoginResponse> {
     try {
+      console.log('Attempting login for user:', user.email);
+      
       const response = await apiClient.post<LoginResponse>('/login', {
         email: user.email,
         password: user.password,
       });
 
+      console.log('Login response:', response.data);
+
       if (response.data.token) {
         const userData = {
           ...response.data.user,
-          roles: [response.data.user.role], // Convert role object to roles array
+          roles: [response.data.user.role],
           loggedIn: true,
+          token: response.data.token,
         };
-        localStorage.setItem('user', btoa(JSON.stringify(userData)));
-        localStorage.setItem('authToken', response.data.token);
+
+        console.log('Formatted user data:', userData);
+
+        const encodedUserData = btoa(JSON.stringify(userData));
+        console.log('Encoded user data:', encodedUserData);
+        
+        localStorage.setItem('user', encodedUserData);
+        
+        // Verify storage
+        const storedData = localStorage.getItem('user');
+        console.log('Stored user data:', storedData);
+        
+        // Decode and verify
+        const decodedData = JSON.parse(atob(storedData || ''));
+        console.log('Decoded stored data:', decodedData);
       }
       return response.data;
     } catch (error: any) {
@@ -73,8 +91,9 @@ export default class AuthService {
   }
 
   logout(): void {
+    console.log('Logging out user');
     localStorage.removeItem('user');
-    localStorage.removeItem('authToken');
+    console.log('User data cleared from storage');
   }
 
   async register(user: User): Promise<RegistrationResponse> {

@@ -43,40 +43,52 @@
             </v-overlay>
 
             <v-form ref="formRef" v-model="valid" @submit.prevent="submit">
+                <h1 class="text-h5 mb-4">Someone Told You About Us/Who?</h1>
                 <v-row>
+                    <!-- Name of Referral -->
                     <v-col cols="12" md="6">
-                        <v-text-field label="Name of Referral" v-model="form.name_of_referal" density="compact" outlined
-                            :disabled="loading" />
+                        <v-text-field label="Name of Referral" v-model="form.name_of_referal" density="compact"
+                            variant="outlined" :disabled="loading"></v-text-field>
                     </v-col>
 
+                    <!-- Where Did You Hear About Us -->
                     <v-col cols="12" md="6">
-                        <v-text-field label="Where Did You Hear About Us?" v-model="form.where_did_you_hear_about_us"
-                            density="compact" outlined :disabled="loading" />
+                        <v-select v-model="form.social_media_id" :items="socialMediaOptions" item-title="name"
+                            item-value="id" label="How did you hear about us?" variant="outlined" density="compact" />
                     </v-col>
+                </v-row>
 
+                <!-- Add the new heading here -->
+                <h1 class="text-h5 my-4">Who Is Your Sponsor?</h1>
+
+                <v-row>
+                    <!-- Parent / Guardian -->
                     <v-col cols="12" md="6">
                         <v-text-field label="Parent / Guardian" v-model="form.parent_guardian" density="compact"
-                            outlined :disabled="loading" />
+                            variant="outlined" :disabled="loading"></v-text-field>
                     </v-col>
 
+                    <!-- Government -->
                     <v-col cols="12" md="6">
-                        <v-text-field label="Government" v-model="form.government" density="compact" outlined
-                            :disabled="loading" />
+                        <v-text-field label="Government" v-model="form.government" density="compact" variant="outlined"
+                            :disabled="loading"></v-text-field>
                     </v-col>
 
+                    <!-- NGO -->
                     <v-col cols="12" md="6">
-                        <v-text-field label="NGO" v-model="form.ngo" density="compact" outlined :disabled="loading" />
+                        <v-text-field label="NGO(s)" v-model="form.ngo" density="compact" variant="outlined"
+                            :disabled="loading"></v-text-field>
                     </v-col>
 
+                    <!-- Self -->
                     <v-col cols="12" md="6">
-                        <v-text-field label="Self" v-model="form.self" density="compact" outlined :disabled="loading" />
+                        <v-text-field label="Self" v-model="form.self" density="compact" variant="outlined"
+                            :disabled="loading"></v-text-field>
                     </v-col>
+                </v-row>
 
-                    <v-col cols="12" md="6">
-                        <v-text-field label="Phone Number" v-model="form.phone_number" density="compact" outlined
-                            :disabled="loading" :rules="[rules.phone]" />
-                    </v-col>
-
+                <!-- Form Actions -->
+                <v-row>
                     <v-col cols="12">
                         <v-card-actions>
                             <v-btn color="primary" variant="outlined" size="large" class="mr-2" @click="goBack"
@@ -109,11 +121,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
 import { makeApiCall } from '@/services/apiService';
+import type { GenericSetUp } from '@/types/globalTypes';
 import { AboutUs } from '@/types/globalTypes';
-
+import { computed, onMounted, reactive, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 const router = useRouter();
 const route = useRoute();
 const activeTab = ref(4); // Set to about us tab
@@ -129,12 +141,11 @@ const personalInfoId = computed(() => {
 const form = ref<AboutUs>({
     student_id: String(personalInfoId.value), // Set student_id from personalInfoId
     name_of_referal: '',
-    where_did_you_hear_about_us: '',
+    social_media_id: null,
     parent_guardian: '',
     government: '',
     ngo: '',
     self: '',
-    phone_number: '',
 });
 
 // Initialize form status locally
@@ -158,8 +169,33 @@ const rules = {
     phone: (v: string) => !v || /^[0-9+\s-]{10,15}$/.test(v) || 'Phone number format is invalid'
 };
 
-onMounted(() => {
-    fetchAboutUs();
+const socialMediaOptions = ref<GenericSetUp[]>([]);
+
+async function fetchSocialMediaOptions() {
+    try {
+        const response = await makeApiCall<GenericSetUp[]>('GET', '/social-media');
+        console.log('Social media options response:', response);
+        socialMediaOptions.value = response;
+    } catch (error) {
+        console.error('Error fetching social media:', error);
+        showSnackbar('Failed to load social media options', 'error');
+        socialMediaOptions.value = [];
+    }
+}
+
+onMounted(async () => {
+    loading.value = true;
+    try {
+        // Fetch all required data in parallel
+        await Promise.all([
+            fetchSocialMediaOptions(),
+            fetchAboutUs(),
+        ]);
+    } catch (error) {
+        console.error('Error during initialization:', error);
+    } finally {
+        loading.value = false;
+    }
 });
 
 function fetchAboutUs() {
@@ -179,6 +215,12 @@ function fetchAboutUs() {
                     // Ensure student_id is set
                     student_id: response.data.student_id || String(personalInfoId.value)
                 };
+
+                // Make sure social_media_id is properly set
+                if (response.data.social_media_id) {
+                    form.value.social_media_id = response.data.social_media_id;
+                }
+
                 formStatus.aboutUs = form.value.is_completed;
             }
         })
@@ -200,16 +242,16 @@ function fetchAboutUs() {
 
 async function submit() {
     try {
-        const { valid: isValid } = await formRef.value?.validate() || { valid: true }; // Make validation optional
+        const { valid: isValid } = await formRef.value?.validate() || { valid: true }; // Validate the form
         if (!isValid) return;
 
         loading.value = true;
 
-        // Make sure student_id is properly set
+        // Prepare form data
         const formData: AboutUs = {
             ...form.value,
-            student_id: form.value.student_id || String(personalInfoId.value),
-            is_completed: true
+            student_id: String(personalInfoId.value),
+            is_completed: true // Mark the form as completed
         };
 
         console.log('Form data to be submitted:', formData);
@@ -248,12 +290,24 @@ async function submit() {
             console.log('Create response:', response);
 
             // Update form with the newly created record ID
-            if (response.data && response.data.id) {
-                form.value.id = response.data.id;
+            if (response && response.id) {
+                form.value.id = response.id;
+
+                // Mark as complete for newly created record
+                const completeResponse = await makeApiCall(
+                    'POST',
+                    `/about-us/${response.id}/complete`
+                );
+
+                console.log('Mark as complete response:', completeResponse);
             }
         }
 
+        // Set formStatus.aboutUs to true
+        console.log('Before setting formStatus.aboutUs:', formStatus.aboutUs);
         formStatus.aboutUs = true;
+        console.log('After setting formStatus.aboutUs:', formStatus.aboutUs);
+
         showSnackbar('About Us information saved successfully!', 'success');
     } catch (error) {
         console.error('Submit error:', error);
@@ -277,7 +331,7 @@ async function submit() {
 
         showSnackbar(errorMessage, 'error');
     } finally {
-        loading.value = false;
+        loading.value = false; // Ensure loading is reset
     }
 }
 
